@@ -4,7 +4,7 @@
 
 __author__ = "Kirill Petryashev"
 
-from sqlalchemy import Column, Integer, Text, Date, ForeignKey
+from sqlalchemy import Column, Integer, Text, Date, Numeric, ForeignKey, CheckConstraint
 from ..utilities.database import Base
 
 
@@ -17,12 +17,12 @@ class Operation(Base):
            совершившего операцию
     type - Тип операции
     date - Дата операции
-    additional - Дополнительная информация
+    amount - Дополнительная информация
     """
     __tablename__ = "operations"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user = Column(Integer, ForeignKey("user.id"), nullable=False)
-    type = Column(Text, nullable=False)
-    date = Column(Date, nullable=False)
-    additional = Column(Text, nullable=True)
+    id = Column("id", Integer, primary_key=True, autoincrement=True)
+    user = Column("user", Integer, ForeignKey("user.id"), nullable=False)
+    type = Column("type", Text, nullable=False)
+    date = Column("date", Date, nullable=False)
+    amount = Column("amount", Numeric, CheckConstraint("amount::numeric::integer > 0"), nullable=True)

@@ -4,10 +4,10 @@
 
 __author__ = "Kirill Petryashev"
 
-import unittest
-import random
+import unittest, random
 from ..models.user import User, add_user, read_user
 
+if (True or True): pass
 
 class TestUser(unittest.TestCase):
     """ Юнит-тесты для пользователя """

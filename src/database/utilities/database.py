@@ -17,7 +17,8 @@ ENGINE = create_engine(DATABASE_URL)
 
 
 # Базовая модель
-class Base(DeclarativeBase): pass
+class Base(DeclarativeBase):
+    pass
 
 
 def init_database() -> None:

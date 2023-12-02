@@ -20,7 +20,7 @@ class TestUser(unittest.TestCase):
         user_id = 41
         User.update_user_balance(user_id, new_balance)
         user = read_user(user_id)
-        self.assertEquals(int(user.balance), new_balance)
+        self.assertEqual(int(user.balance), new_balance)
 
     def test_add_many_users(self):
         """

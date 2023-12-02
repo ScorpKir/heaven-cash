@@ -2,6 +2,8 @@ name: PEP8
 on:
   pull_request:
 
+  workflow_dispatch:
+
 jobs:
   check_pep8:
     runs-on: ubuntu-latest

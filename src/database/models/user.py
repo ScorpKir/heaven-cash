@@ -23,12 +23,20 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column("id", Integer, primary_key=True, autoincrement=True)
-    code = Column("code", Text, CheckConstraint("code ~ '^[0-9]{4}$'::text"), nullable=False,
+    code = Column("code",
+                  Text,
+                  CheckConstraint("code ~ '^[0-9]{4}$'::text"),
+                  nullable=False,
                   unique=True)
-    card_number = Column("card_number", Text, CheckConstraint("card_number ~ '^[0-9]{4}$'::text"),
+    card_number = Column("card_number",
+                         Text,
+                         CheckConstraint("card_number ~ '^[0-9]{4}$'::text"),
                          nullable=False)
     payment_system = Column("payment_system", Text, nullable=False)
-    balance = Column("balance", Integer, CheckConstraint("balance::numeric::integer > 0"), default=0)
+    balance = Column("balance",
+                     Integer,
+                     CheckConstraint("balance::numeric::integer > 0"),
+                     default=0)
 
     @classmethod
     def update_user_balance(cls, id_: int, new_balance: int) -> None:

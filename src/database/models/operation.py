@@ -25,4 +25,7 @@ class Operation(Base):
     user = Column("user", Integer, ForeignKey("user.id"), nullable=False)
     type = Column("type", Text, nullable=False)
     date = Column("date", Date, nullable=False)
-    amount = Column("amount", Numeric, CheckConstraint("amount::numeric::integer > 0"), nullable=True)
+    amount = Column("amount",
+                    Numeric,
+                    CheckConstraint("amount::numeric::integer > 0"),
+                    nullable=True)

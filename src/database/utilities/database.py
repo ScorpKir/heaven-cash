@@ -8,7 +8,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase
 from .config import get_connection_string
 
-
 # Строка подключения к базе данных
 DATABASE_URL = get_connection_string()
 

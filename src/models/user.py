@@ -8,7 +8,7 @@ from typing import Optional
 from sqlalchemy import Column, Integer, Text, CheckConstraint
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, constr, conint, ConfigDict
-from ..utilities.database import Base, ENGINE
+from src.models.utilities.database import Base, ENGINE
 
 
 class UserDatabaseModel(Base):

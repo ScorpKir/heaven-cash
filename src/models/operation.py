@@ -5,7 +5,7 @@
 __author__ = "Kirill Petryashev"
 
 from sqlalchemy import Column, Integer, Text, Date, Numeric, ForeignKey, CheckConstraint
-from ..utilities.database import Base
+from src.models.utilities.database import Base
 
 
 class Operation(Base):

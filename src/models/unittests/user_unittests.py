@@ -11,8 +11,8 @@ import pytest
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 from ..utilities.database import ENGINE
-from src.models.user import (User, create_user, read_user, update_user,
-                             delete_user, UserDatabaseModel)
+from src.models.user import (User, create_user, read_user_by_id, update_user,
+                             delete_user, UserDatabaseModel, read_user_by_code)
 
 
 class TestUser(unittest.TestCase):
@@ -97,20 +97,29 @@ class TestUser(unittest.TestCase):
         self.assertNotEqual(id_, None)
         delete_user(id_)
 
-    def test_read_user(self):
+    def test_read_user_by_id(self):
         """
         Тестирование чтения пользователя
         """
         id_ = 1
-        user = read_user(id_)
+        user = read_user_by_id(id_)
         self.assertEqual(id_, user.id)
+
+    def test_read_user_by_correct_code(self):
+        code = "4579"
+        user = read_user_by_code(code)
+        self.assertEqual(code, user.code)
+
+    def test_read_user_by_broken_code(self):
+        code = "asdf"
+        self.assertRaises(ValueError, read_user_by_code, code)
 
     def test_update_user(self):
         """
         Тестирование обновления пользователя
         """
         id_ = 1
-        user = read_user(id_)
+        user = read_user_by_id(id_)
         user.balance = randint(0, 1_000_000)
         result = update_user(user)
         self.assertNotEqual(result, None)

@@ -1,5 +1,5 @@
 # heaven-cash
-![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/ScorpKir/heaven-cash/PEP8.yml?style=for-the-badge&logo=python&logoColor=yellow&label=PEP8)
+![PEP8](https://github.com/ScorpKir/heaven-cash/actions/workflows/PEP8.yml/badge.svg?dummy=unused)
 
 Мы молодая организация, создающая инновационный продукт в сфере финансовых технологий. У нас в офисе нет пивного крана, зато можно сыграть в покер.
 <p align="center">

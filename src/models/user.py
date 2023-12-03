@@ -5,7 +5,7 @@
 __author__ = "Kirill Petryashev, Dmitry Leminchuk"
 
 from typing import Optional
-from sqlalchemy import Column, Integer, Text, CheckConstraint
+from sqlalchemy import Column, Integer, Text, CheckConstraint, text
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, constr, conint, ConfigDict
 from src.models.utilities.database import Base, ENGINE
@@ -95,7 +95,7 @@ def create_user(user: User) -> int:
         return db_user.id
 
 
-def read_user(id_: int) -> Optional[User]:
+def read_user_by_id(id_: int) -> Optional[User]:
     """
     Чтение пользователя из базы данных
 
@@ -107,6 +107,25 @@ def read_user(id_: int) -> Optional[User]:
     """
     with Session(autoflush=False, bind=ENGINE) as db:
         db_user = db.get(UserDatabaseModel, id_)
+        if db_user is not None:
+            return User.model_validate(db_user, from_attributes=True)
+
+
+def read_user_by_code(code: str) -> Optional[User]:
+    """
+        Чтение пользователя из базы данных по пин-коду карты
+
+        :param code: Пин-код пользователя
+        :type code: str
+        :returns: Пользователь или ничего, в случае если
+                  пользователь не будет найден.
+        :rtype: UserDatabaseModel | None
+        """
+    if not code.isdigit() or not len(code) == 4:
+        raise ValueError("Неверный формат пин-кода")
+    with Session(autoflush=False, bind=ENGINE) as db:
+        statement = text(f"users.code = '{code}'")
+        db_user = db.query(UserDatabaseModel).filter(statement).first()
         if db_user is not None:
             return User.model_validate(db_user, from_attributes=True)
 

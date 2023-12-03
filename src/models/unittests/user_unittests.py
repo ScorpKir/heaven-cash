@@ -6,6 +6,8 @@ __author__ = "Kirill Petryashev"
 
 import unittest
 from random import randint
+
+import pytest
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 from ..utilities.database import ENGINE
@@ -16,6 +18,7 @@ from src.models.user import (User, create_user, read_user, update_user,
 class TestUser(unittest.TestCase):
     """ Юнит-тесты для пользователя """
 
+    @pytest.mark.excluded
     def test_add_many_users(self):
         """
         Скрипт для заполнения базы данных пользователями
@@ -91,7 +94,7 @@ class TestUser(unittest.TestCase):
                     payment_system="МастерМир",
                     balance=12345)
         id_ = create_user(user)
-        self.assertNotEquals(id_, None)
+        self.assertNotEqual(id_, None)
         delete_user(id_)
 
     def test_read_user(self):

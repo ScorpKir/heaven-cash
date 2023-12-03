@@ -1,0 +1,28 @@
+name: PyTest
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup poetry
+      run: pipx install poetry
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'poetry'
+    - run: poetry lock
+    - run: poetry install
+    - name: 'Create .env from secrets'
+      run: |
+        echo "${{ secrets.ENV_FILE }}" > .env
+    - run: poetry run pytest -m 'not excluded'

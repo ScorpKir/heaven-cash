@@ -5,12 +5,12 @@
 __author__ = "Kirill Petryashev"
 
 from fastapi import FastAPI
-from .api.v1.endpoints import user
+from src.api import user
 
-app = FastAPI()
+app = FastAPI(title="heaven-cash")
 
 # Подключаем роутеры
-app.include_router(user.router, prefix="/v1")
+app.include_router(user.router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn

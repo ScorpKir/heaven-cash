@@ -22,4 +22,7 @@ jobs:
         cache: 'poetry'
     - run: poetry lock
     - run: poetry install
+    - name: 'Create .env from secrets'
+      run: |
+        echo "${{ secrets.ENV_FILE }}" > .env
     - run: poetry run pytest

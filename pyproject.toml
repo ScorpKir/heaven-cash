@@ -22,3 +22,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 python_files = "*_unittests.py"
+marks = [
+	"excluded: tests that aren't running automatically via GitHub actions"
+]

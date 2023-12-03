@@ -94,7 +94,7 @@ class TestUser(unittest.TestCase):
                     payment_system="МастерМир",
                     balance=12345)
         id_ = create_user(user)
-        self.assertNotEquals(id_, None)
+        self.assertNotEqual(id_, None)
         delete_user(id_)
 
     def test_read_user(self):

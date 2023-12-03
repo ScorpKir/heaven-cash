@@ -9,14 +9,8 @@ from random import randint
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 from ..utilities.database import ENGINE
-from ..models.user import (
-    User,
-    create_user,
-    read_user,
-    update_user,
-    delete_user,
-    UserDatabaseModel
-)
+from ..models.user import (User, create_user, read_user, update_user,
+                           delete_user, UserDatabaseModel)
 
 
 class TestUser(unittest.TestCase):

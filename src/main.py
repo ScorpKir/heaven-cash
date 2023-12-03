@@ -17,7 +17,6 @@ app.include_router(user.router, prefix="/api")
 @app.get("/docs", include_in_schema=False)
 async def get_documentation(request: Request):
     print(request.scope)
-    print("хер")
     openapi_url = request.scope.get("root_path") + "/openapi.json"
     return get_swagger_ui_html(openapi_url=openapi_url, title="Swagger")
 

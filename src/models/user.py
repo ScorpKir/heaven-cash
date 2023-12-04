@@ -95,6 +95,9 @@ def create_user(user: User) -> int:
         return db_user.id
 
 
+# region read
+
+
 def read_user_by_id(id_: int) -> Optional[User]:
     """
     Чтение пользователя из базы данных
@@ -113,14 +116,14 @@ def read_user_by_id(id_: int) -> Optional[User]:
 
 def read_user_by_code(code: str) -> Optional[User]:
     """
-        Чтение пользователя из базы данных по пин-коду карты
+    Чтение пользователя из базы данных по пин-коду карты
 
-        :param code: Пин-код пользователя
-        :type code: str
-        :returns: Пользователь или ничего, в случае если
-                  пользователь не будет найден.
-        :rtype: UserDatabaseModel | None
-        """
+    :param code: Пин-код пользователя
+    :type code: str
+    :returns: Пользователь или ничего, в случае если
+              пользователь не будет найден.
+    :rtype: UserDatabaseModel | None
+    """
     if not code.isdigit() or not len(code) == 4:
         raise ValueError("Неверный формат пин-кода")
     with Session(autoflush=False, bind=ENGINE) as db:
@@ -128,6 +131,23 @@ def read_user_by_code(code: str) -> Optional[User]:
         db_user = db.query(UserDatabaseModel).filter(statement).first()
         if db_user is not None:
             return User.model_validate(db_user, from_attributes=True)
+
+
+def read_user_id_by_code(code: str) -> Optional[int]:
+    """
+    Получение идентификатора пользователя по пин-коду
+
+    :param code: Пин-код пользователя
+    :type code: str
+    :returns: Идентификатор если пользователь найден
+    :rtype: int | None
+    """
+    user = read_user_by_code(code)
+    if user is not None:
+        return user.id
+
+
+# endregion read
 
 
 def update_user(user: User) -> Optional[User]:

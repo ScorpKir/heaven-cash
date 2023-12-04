@@ -20,5 +20,5 @@ jobs:
           cd /home/mrmin/heaven-cash
           git checkout develop
           git pull
-          poetry install
+          /home/mrmin/.local/bin/poetry install
           pm2 restart atm-api

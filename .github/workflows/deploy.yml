@@ -1,0 +1,24 @@
+name: Python CD
+
+on:
+  push:
+    branches: [ develop, main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy using SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: 22
+        script: |
+          cd /home/mrmin/heaven-cash
+          git checkout develop
+          git pull
+          poetry install
+          pm2 restart atm-api

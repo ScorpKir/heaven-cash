@@ -13,7 +13,7 @@ from src.models.user import User, read_user_id_by_code, read_user_by_id
 router = APIRouter(prefix='/user')
 
 
-@router.get("/get_user_id")
+@router.get("/get_id")
 async def get_user_id_by_code(code: str) -> JSONResponse:
     """
     Получение идентификатора пользователя по пин-коду

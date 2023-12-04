@@ -97,6 +97,7 @@ def create_user(user: User) -> int:
 
 # region read
 
+
 def read_user_by_id(id_: int) -> Optional[User]:
     """
     Чтение пользователя из базы данных
@@ -144,6 +145,7 @@ def read_user_id_by_code(code: str) -> Optional[int]:
     user = read_user_by_code(code)
     if user is not None:
         return user.id
+
 
 # endregion read
 

@@ -21,11 +21,8 @@ async def get_user_id_by_code(code: str) -> JSONResponse:
     try:
         id_ = read_user_id_by_code(code)
         id_ = "" if id_ is None else id_
-        response = {
-            "id": id_
-        }
-        return JSONResponse(content=response,
-                            status_code=status.HTTP_200_OK)
+        response = {"id": id_}
+        return JSONResponse(content=response, status_code=status.HTTP_200_OK)
     except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Неверный формат пин-кода")

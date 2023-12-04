@@ -12,7 +12,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 from ..utilities.database import ENGINE
 from src.models.user import (User, create_user, read_user_by_id, update_user,
-                             delete_user, UserDatabaseModel, read_user_by_code)
+                             delete_user, UserDatabaseModel, read_user_by_code,
+                             read_user_id_by_code)
 
 
 class TestUser(unittest.TestCase):
@@ -105,10 +106,50 @@ class TestUser(unittest.TestCase):
         user = read_user_by_id(id_)
         self.assertEqual(id_, user.id)
 
+    def test_read_user_by_non_existing_id(self):
+        """
+        Тестирование чтения пользователя по несуществующему идентификатору
+        """
+        id_ = 11
+        user = read_user_by_id(id_)
+        self.assertEqual(user, None)
+
     def test_read_user_by_correct_code(self):
         code = "4579"
         user = read_user_by_code(code)
         self.assertEqual(code, user.code)
+
+    def test_read_user_by_non_existing_code(self):
+        """
+        Тестирование чтения пользователя по несуществующему пинкоду
+        """
+        code = "5754"
+        user = read_user_by_code(code)
+        self.assertEqual(user, None)
+
+    def test_read_user_id_by_correct_code(self):
+        """
+        Тестирование чтения идентификатора пользователя по корректному пинкоду
+        """
+        code = "4579"
+        id_ = read_user_id_by_code(code)
+        self.assertNotEqual(id_, None)
+
+    def test_read_user_id_by_broken_code(self):
+        """
+        Тестирование чтения идентификатора пользователя по некорректному пинкоду
+        """
+        code = "a"
+        self.assertRaises(ValueError, read_user_id_by_code, code)
+
+    def test_read_user_id_by_non_existing_code(self):
+        """
+        Тестирование чтения идентификатора пользователя
+        по несуществующему пинкоду
+        """
+        code = "5754"
+        id_ = read_user_id_by_code(code)
+        self.assertEqual(id_, None)
 
     def test_read_user_by_broken_code(self):
         code = "asdf"

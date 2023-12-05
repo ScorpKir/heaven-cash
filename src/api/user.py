@@ -39,6 +39,7 @@ async def get_user(id: int | None = None) -> JSONResponse:
     return JSONResponse(content=response.model_dump(),
                         status_code=status.HTTP_200_OK)
 
+
 @router.post("/update_balance")
 async def user_update_balance(id: int, amount: int) -> JSONResponse:
     """
@@ -73,5 +74,4 @@ async def user_update_balance(id: int, amount: int) -> JSONResponse:
     except pydantic.ValidationError:
         return JSONResponse(content=response,
                             status_code=status.HTTP_418_IM_A_TEAPOT)
-    return JSONResponse(content=response,
-                        status_code=status.HTTP_200_OK)
+    return JSONResponse(content=response, status_code=status.HTTP_200_OK)

@@ -4,7 +4,7 @@
 
 __author__ = "Kirill Petryashev"
 
-import pydantic
+from pydantic import ValidationError
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
@@ -62,16 +62,20 @@ async def user_update_balance(id: int, amount: int) -> JSONResponse:
     }
     ```
     """
-    user = read_user_by_id(id)
-    response = {"balance": "unchanged"}
-    if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Неизвестный ID")
     try:
-        user.balance += amount
-        update_user(user)
-        response = {"balance": str(user.balance)}
-    except pydantic.ValidationError:
-        return JSONResponse(content=response,
-                            status_code=status.HTTP_418_IM_A_TEAPOT)
-    return JSONResponse(content=response, status_code=status.HTTP_200_OK)
+        user = read_user_by_id(id)
+        response = {"balance": "unchanged"}
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Неизвестный ID")
+        try:
+            user.balance += amount
+            update_user(user)
+            response = {"balance": str(user.balance)}
+        except ValidationError:
+            return JSONResponse(content=response,
+                                status_code=status.HTTP_418_IM_A_TEAPOT)
+        return JSONResponse(content=response, status_code=status.HTTP_200_OK)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Неверный формат входных данных")

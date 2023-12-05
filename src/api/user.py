@@ -83,7 +83,9 @@ async def get_user(id: int | None = None) -> JSONResponse:
 
 
 @router.post("/operation")
-async def user_operation(id: int, amount: int, type: str | None = "general") -> JSONResponse:
+async def user_operation(id: int,
+                         amount: int,
+                         type: str | None = "general") -> JSONResponse:
     """
     # Обработка операции пользователя с указанным идентификатором
     ## Параметры запроса

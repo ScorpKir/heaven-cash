@@ -1,5 +1,5 @@
 """
-Ендпоинт /api/user/
+Эндпоинт /api/user/
 """
 
 __author__ = "Kirill Petryashev"
@@ -11,7 +11,7 @@ from fastapi.exceptions import HTTPException
 from src.models.user import \
     (User, read_user_id_by_code, read_user_by_id, update_user)
 
-# Определение роутера для ендпоинтов пользователя
+# Определение роутера для эндпоинтов пользователя
 router = APIRouter(prefix='/user')
 
 

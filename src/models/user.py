@@ -5,9 +5,9 @@
 __author__ = "Kirill Petryashev, Dmitry Leminchuk"
 
 from typing import Optional
-from sqlalchemy import Column, Integer, Text, CheckConstraint, text
+from sqlalchemy import Column, Integer, Text, text
 from sqlalchemy.orm import Session
-from pydantic import BaseModel, constr, conint, ConfigDict
+from pydantic import BaseModel, ConfigDict, constr, conint, confloat
 from src.models.utilities.database import Base, ENGINE
 
 
@@ -18,20 +18,10 @@ class UserDatabaseModel(Base):
     __tablename__ = "users"
 
     id = Column("id", Integer, primary_key=True, autoincrement=True)
-    code = Column("code",
-                  Text,
-                  CheckConstraint("code ~ '^[0-9]{4}$'::text"),
-                  nullable=False,
-                  unique=True)
-    card_number = Column("card_number",
-                         Text,
-                         CheckConstraint("card_number ~ '^[0-9]{4}$'::text"),
-                         nullable=False)
+    code = Column("code", Text, nullable=False, unique=True)
+    card_number = Column("card_number", Text, nullable=False)
     payment_system = Column("payment_system", Text, nullable=False)
-    balance = Column("balance",
-                     Integer,
-                     CheckConstraint("balance::numeric::integer > 0"),
-                     default=0)
+    balance = Column("balance", Integer, default=0)
 
     def to_dict(self) -> dict:
         """
@@ -65,7 +55,7 @@ class User(BaseModel):
     code: constr(pattern=r'^\d{4}$')
     card_number: constr(pattern=r'^\d{4}$')
     payment_system: str
-    balance: conint(ge=0)
+    balance: confloat(ge=0.00)
 
     def to_database_model(self) -> UserDatabaseModel:
         """

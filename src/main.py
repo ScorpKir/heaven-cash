@@ -7,17 +7,12 @@ __author__ = "Kirill Petryashev"
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.api import user
+from src.models.utilities.config import get_allowed_origins
 
 app = FastAPI(title="heaven-cash")
 
 # Разрешенные источники
-origins = [
-    "http://127.0.0.1", "http://127.0.0.1:8080", "https://127.0.0.1",
-    "https://127.0.0.1:8080", "http://localhost", "http://localhost:8080",
-    "https://localhost", "https://localhost:8080", "http://45.145.6.133",
-    "http://45.145.6.133:8080", "https://45.145.6.133",
-    "https://45.145.6.133:8080"
-]
+origins = get_allowed_origins()
 
 # Подключение разрешенных источников
 app.add_middleware(CORSMiddleware,

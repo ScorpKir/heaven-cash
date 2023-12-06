@@ -32,7 +32,7 @@ def get_allowed_origins() -> list[str]:
     """
 
     load_dotenv()
-    allowed = os.getenv("CORS_ALLOWED_ORIGINS").split(',')
+    allowed = os.getenv("CORS_ALLOWED_ORIGINS")
     if allowed is None or allowed == "":
         raise KeyError("Не указан ни один разрешенный источник для CORS.")
-    return allowed
+    return allowed.split(',')

@@ -13,7 +13,8 @@ app = FastAPI(title="heaven-cash")
 # Разрешенные источники
 origins = [
     "http://127.0.0.1", "http://127.0.0.1:8080", "https://127.0.0.1",
-    "https://127.0.0.1:8080", "http://45.145.6.133",
+    "https://127.0.0.1:8080", "http://localhost", "http://localhost:8080",
+    "https://localhost", "https://localhost:8080", "http://45.145.6.133",
     "http://45.145.6.133:8080", "https://45.145.6.133",
     "https://45.145.6.133:8080"
 ]

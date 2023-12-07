@@ -84,7 +84,7 @@ async def get_user(id: int | None = None) -> JSONResponse:
 
 @router.post("/operation")
 async def user_operation(id: int,
-                         amount: int,
+                         amount: float,
                          type: str | None = "general") -> JSONResponse:
     """
     # Обработка операции пользователя с указанным идентификатором
@@ -108,17 +108,11 @@ async def user_operation(id: int,
     Вместе с этим кодом возвращается JSON с новым балансом в формате
     ```
     {
-        "balance": string
+        "balance": float
     }
     ```
-    `HTTP 418` Операция не прошла, а баланс не изменен, так как у пользователя
+    `HTTP 500` Операция не прошла, а баланс не изменен, так как у пользователя
     **недостаточно средств**.
-    Вместе с этим кодом возвращается JSON с сообщением **"unchanged"**
-    в формате
-    ```
-    {
-        "balance": "unchanged"
-    }
     ```
     `HTTP 404` Пользователь с указанным идентификатором **не существует**.
     """
@@ -132,17 +126,17 @@ async def user_operation(id: int,
 
     try:
         user = read_user_by_id(id)
-        response = {"balance": "unchanged"}
         if user is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Неизвестный ID")
         try:
             user.balance += amount
             update_user(user)
-            response = {"balance": str(user.balance)}
+            response = {"balance": user.balance}
         except ValidationError:
-            return JSONResponse(content=response,
-                                status_code=status.HTTP_418_IM_A_TEAPOT)
+            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            raise HTTPException(status_code=status_code,
+                                detail="Не хватает денег")
         return JSONResponse(content=response, status_code=status.HTTP_200_OK)
     except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,

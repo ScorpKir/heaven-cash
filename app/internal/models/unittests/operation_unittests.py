@@ -18,46 +18,6 @@ from app.internal.models.operation import Operation
 class TestUser(unittest.TestCase):
     """ Юнит-тесты для пользователя """
 
-    @pytest.mark.excluded
-    def test_add_many_operations(self):
-        """
-                Скрипт для заполнения базы данных пользователями
-                """
-        with Session(autoflush=False, bind=ENGINE) as db:
-            truncate_query = text(f"""
-                        TRUNCATE TABLE {OperationDatabaseModel.__tablename__} 
-                        CASCADE;
-                    """)
-            connection = db.connection()
-            connection.execute(truncate_query)
-            db.commit()
-        operations = [
-            Operation(id=1,
-                      user=1,
-                      type="withdraw",
-                      date=date.fromisoformat("2023-12-09"),
-                      amount=100),
-            Operation(id=2,
-                      user=1,
-                      type="deposit",
-                      date=date.fromisoformat("2024-12-09"),
-                      amount=1000),
-            Operation(id=3,
-                      user=1,
-                      type="mobile",
-                      date=date.fromisoformat("2023-12-11"),
-                      amount=670,
-                      additional="+79535117240"),
-            Operation(id=4,
-                      user=1,
-                      type="communal",
-                      date=date.fromisoformat("2023-11-21"),
-                      amount=3456,
-                      additional="3453456098345067034569"),
-        ]
-        for operation in operations:
-            Operation.create(operation)
-
     def test_create_user(self):
         """
         Тестирование создания операции
@@ -76,9 +36,17 @@ class TestUser(unittest.TestCase):
         """
         Тестирование чтения операции
         """
-        id_ = 1
-        operation = Operation.read_by_id(id_)
-        self.assertEqual(id_, operation.id)
+        operation = Operation(id=5,
+                              user=1,
+                              type="communal",
+                              date=date.fromisoformat("2023-11-21"),
+                              amount=3456,
+                              additional="3453456098345067034569")
+        Operation.create(operation)
+        id_ = operation.id
+        new_operation = Operation.read_by_id(id_)
+        self.assertNotEqual(new_operation, None)
+        Operation.delete(id_)
 
     def test_read_operation_by_non_existing_id(self):
         """
@@ -92,15 +60,15 @@ class TestUser(unittest.TestCase):
         """
         Тестирование удаления операции
         """
-        id_ = 1
-        result = Operation.delete(id_)
-        self.assertEqual(result, True)
-        operation = Operation(id=1,
+        operation = Operation(id=5,
                               user=1,
-                              type="withdraw",
-                              date=date.fromisoformat("2023-12-09"),
-                              amount=100)
+                              type="communal",
+                              date=date.fromisoformat("2023-11-21"),
+                              amount=3456,
+                              additional="3453456098345067034569")
         Operation.create(operation)
+        result = Operation.delete(operation.id)
+        self.assertEqual(result, True)
 
     def test_delete_operation_by_non_existing_id(self):
         """

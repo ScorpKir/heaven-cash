@@ -7,10 +7,9 @@ __author__ = "Kirill Petryashev"
 from typing import Optional
 from enum import Enum
 from datetime import datetime
-from sqlalchemy import Column, Integer, Text, Date, Numeric, ForeignKey
 from pydantic import BaseModel, ConfigDict, confloat, conint
 
-from app.package.database.database import Base
+from app.package.database.models.operation import OperationDatabaseModel
 
 
 class OperationTypes(str, Enum):
@@ -21,36 +20,6 @@ class OperationTypes(str, Enum):
     DEPOSIT = 'deposit'
     MOBILE = 'mobile'
     COMMUNAL = 'communal'
-
-
-class OperationDatabaseModel(Base):
-    """
-    Модель операции для базы данных
-    """
-    __tablename__ = "operations"
-
-    id = Column("id", Integer, primary_key=True, autoincrement=True)
-    user = Column("user", Integer, ForeignKey("user.id"), nullable=False)
-    type = Column("type", Text, nullable=False)
-    date = Column("date", Date, nullable=False)
-    amount = Column("amount", Numeric, nullable=True)
-    additional = Column("additional", Text)
-
-    def to_dict(self) -> dict:
-        """
-        Преобразование модели к словарю
-
-        :returns: Словарь с необходимыми полями
-        :rtype: dict
-        """
-        return {
-            "id": self.id,
-            "user": self.user,
-            "type": self.type,
-            "date": self.date,
-            "amount": self.amount,
-            "additional": self.additional
-        }
 
 
 class Operation(BaseModel):
@@ -67,7 +36,60 @@ class Operation(BaseModel):
     model_config = ConfigDict(validate_assignment=True)
 
     id: Optional[conint(ge=1)] = None
+    user: conint(ge=1)
     type: OperationTypes
     date: datetime
     amount: confloat(ge=0.00)
-    additional: str
+    additional: Optional[str] = None
+
+    def __to_database_model(self) -> OperationDatabaseModel:
+        """
+        Конвертация модели операции
+        в модель для базы данных
+
+        :returns: Модель операции для базы данных
+        :rtype: OperationDatabaseModel
+        """
+        return OperationDatabaseModel(**self.model_dump())
+
+    @classmethod
+    def create(cls, operation) -> int:
+        """
+        Добавление операции
+
+        :param operation: Операция для создания
+        :type operation: Operation
+
+        :returns: Идентификатор созданной операции
+        :rtype: int
+        """
+        return OperationDatabaseModel.create(operation.__to_database_model())
+
+    @classmethod
+    def read_by_id(cls, id_: int):
+        """
+        Чтение операции по идентификатору
+
+        :param id_: Идентификатор операции
+        :type id_: int
+
+        :returns: Операция или ничего, в случае если
+                  операция не будет найдена
+        :rtype: Operation | None
+        """
+        db_operation = OperationDatabaseModel.read_by_id(id_)
+        if db_operation:
+            return cls.model_validate(db_operation.to_dict())
+
+    @classmethod
+    def delete(cls, id_: int) -> bool:
+        """
+        Удаление операции
+
+        :param id_: Идентификатор операции для удаления
+        :type id_: int
+
+        :returns: Логическое значение обозначающее успех операции
+        :rtype: bool
+        """
+        return OperationDatabaseModel.delete(id_)

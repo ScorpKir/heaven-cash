@@ -4,8 +4,8 @@
 
 __author__ = "Kirill Petryashev"
 
-from sqlalchemy import Column, Integer, Text, text
 from sqlalchemy.orm import Session
+from sqlalchemy import Column, Integer, Text, text
 
 from app.package.database.database import Base, ENGINE
 
@@ -95,10 +95,10 @@ class UserDatabaseModel(Base):
         :type user: UserDatabaseModel
 
         :returns: Логическое значение обозначающее успех операции
-        :rtype bool:
+        :rtype: bool
         """
         with Session(autoflush=False, bind=ENGINE) as db:
-            user_db = db.get(UserDatabaseModel, user.id)
+            user_db = db.get(cls, user.id)
             if user_db:
                 user_db.balance = user.balance
                 db.commit()
@@ -115,10 +115,10 @@ class UserDatabaseModel(Base):
         :type id_: int
 
         :returns: Логическое значение обозначающее успех операции
-        :rtype bool:
+        :rtype: bool
         """
         with Session(autoflush=False, bind=ENGINE) as db:
-            db_user = db.get(UserDatabaseModel, id_)
+            db_user = db.get(cls, id_)
             if db_user:
                 db.delete(db_user)
                 db.commit()

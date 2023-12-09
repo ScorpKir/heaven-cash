@@ -8,8 +8,8 @@ from pydantic import ValidationError
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
-from src.models.user import \
-    (User, read_user_id_by_code, read_user_by_id, update_user)
+
+from app.internal.models.user import User
 
 # Определение роутера для эндпоинтов пользователя
 router = APIRouter(prefix='/user')
@@ -35,11 +35,10 @@ async def get_user_id_by_code(code: str) -> JSONResponse:
     `HTTP 404` Пользователь с указанным ПИН-кодом **не существует**.
     """
     try:
-        id_ = read_user_id_by_code(code)
+        id_ = User.read_id_by_code(code)
         if id_ is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Неизвестный ПИН-код")
-        # id_ = "" if id_ is None else id_
         response = {"id": id_}
         return JSONResponse(content=response, status_code=status.HTTP_200_OK)
     except ValueError:
@@ -71,7 +70,7 @@ async def get_user(id: int | None = None) -> JSONResponse:
     `HTTP 404` Пользователь с указанным идентификатором **не существует**.
     """
     try:
-        response = read_user_by_id(id)
+        response = User.read_by_id(id)
         if response is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Неизвестный ID")
@@ -125,13 +124,13 @@ async def user_operation(id: int,
     #       фронтенда о статусе запроса.
 
     try:
-        user = read_user_by_id(id)
+        user = User.read_by_id(id)
         if user is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Неизвестный ID")
         try:
             user.balance += amount
-            update_user(user)
+            User.update(user)
             response = {"balance": user.balance}
         except ValidationError:
             status_code = status.HTTP_500_INTERNAL_SERVER_ERROR

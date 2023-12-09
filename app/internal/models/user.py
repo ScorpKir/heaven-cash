@@ -28,7 +28,7 @@ class User(BaseModel):
     payment_system: str
     balance: confloat(ge=0.00)
 
-    def to_database_model(self) -> UserDatabaseModel:
+    def __to_database_model(self) -> UserDatabaseModel:
         """
         Конвертация модели пользователя
         в модель для базы данных
@@ -49,8 +49,7 @@ class User(BaseModel):
         :returns: Идентификатор только что созданного пользователя
         :rtype: int
         """
-        id_ = UserDatabaseModel.create(user.to_database_model())
-        return id_
+        return UserDatabaseModel.create(user.__to_database_model())
 
     @classmethod
     def read_by_id(cls, id_: int):
@@ -110,12 +109,12 @@ class User(BaseModel):
         :param user: Пользователь с новыми данными
         :type user: User
 
-        :param user: Пользователь для обновления
-        :type user: User
+        :returns: Логическое значение обозначающее успех операции
+        :rtype: bool
         """
         if not user.id:
             raise ValueError("Отсутствует идентификатор пользователя")
-        return UserDatabaseModel.update(user.to_database_model())
+        return UserDatabaseModel.update(user.__to_database_model())
 
     @classmethod
     def delete(cls, id_: int) -> bool:
@@ -126,6 +125,6 @@ class User(BaseModel):
         :type id_: int
 
         :returns: Логическое значение обозначающее успех операции
-        :rtype bool:
+        :rtype: bool
         """
         return UserDatabaseModel.delete(id_)

@@ -189,3 +189,11 @@ class TestUser(unittest.TestCase):
                     payment_system="МастерМир",
                     balance=10_000)
         User.create(user)
+
+    def test_delete_user_by_non_existing_id(self):
+        """
+        Тестирование удаления пользователя по несуществующему идентификатору
+        """
+        id_ = 1_000_000_000
+        result = User.delete(id_)
+        self.assertEqual(result, False)

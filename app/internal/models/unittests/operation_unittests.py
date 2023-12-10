@@ -5,14 +5,9 @@
 __author__ = "Kirill Petryashev"
 
 import unittest
-import pytest
 from datetime import date
-from sqlalchemy.orm import Session
-from sqlalchemy.sql import text
 
-from app.package.database.database import ENGINE
-from app.package.database.models.operation import OperationDatabaseModel
-from app.internal.models.operation import Operation
+from app.internal.models.operation.operation import Operation
 
 
 class TestUser(unittest.TestCase):

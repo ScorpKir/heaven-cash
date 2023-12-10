@@ -9,7 +9,7 @@ from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
 
-from app.internal.models.user import User
+from app.internal.models.user.user import User
 
 # Определение роутера для эндпоинтов пользователя
 router = APIRouter(prefix='/user')

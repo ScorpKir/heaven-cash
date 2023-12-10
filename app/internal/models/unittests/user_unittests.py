@@ -12,7 +12,7 @@ from sqlalchemy.sql import text
 
 from app.package.database.database import ENGINE
 from app.package.database.models.user import UserDatabaseModel
-from app.internal.models.user import User
+from app.internal.models.user.user import User
 
 
 class TestUser(unittest.TestCase):

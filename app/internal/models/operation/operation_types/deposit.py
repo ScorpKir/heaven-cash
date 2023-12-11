@@ -7,7 +7,7 @@ __author__ = "Alexey Kiselev"
 from app.internal.models.operation.operation import Operation
 
 
-class CommunalPaymentOperation(Operation):
+class DepositOperation(Operation):
     """
     Операция внесения средств
     """

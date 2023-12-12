@@ -8,6 +8,7 @@ from app.internal.models.operation.operation import Operation, OperationTypes
 import app.internal.routes.user as ruser
 from datetime import datetime
 
+
 class CommunalPaymentOperation(Operation):
     """
     Операция оплаты коммунальных платежей
@@ -23,7 +24,7 @@ class CommunalPaymentOperation(Operation):
                          additional=additional,
                          type='communal')
         self.type = 'communal'
-        if additional != None:
+        if additional is not None:
             self.additional = additional
         else:
             raise ValueError("additional can not be None!")
@@ -43,6 +44,7 @@ class CommunalPaymentOperation(Operation):
         # Занесение операции в базу данных
         _id = Operation.create(cls)
         return _id
+
     @classmethod
     def undo(cls):
         """
@@ -51,10 +53,7 @@ class CommunalPaymentOperation(Operation):
         :return: Логическое значение обозначающее успех операции
         :rtype: bool
         """
-
         # Обработка операции пользователя с указанным идентификатором
         ruser.user_operation(cls.user, cls.amount, 'communal')
-
         # Удаление операции из базы данных
-        is_complete = Operation.delete(cls.id)
-        return is_complete
+        return Operation.delete(cls.id)

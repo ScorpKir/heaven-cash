@@ -19,6 +19,7 @@ class CommunalPaymentOperation(Operation):
     amount - Сумма операции
     additional - Дополнительная информация (номер квитанции)
     """
+    
     def __init__(self, id, user, date, amount, additional):
         super().__init__(id=id,
                          user=user,

@@ -43,7 +43,7 @@ class WithdrawOperation(Operation):
     @classmethod
     def execute(cls):
         """
-        Выполнение внесения средств
+        Выполнение снятия средств
 
         :return: id пользователя который выполнил операцию
         :rtype: int
@@ -58,7 +58,7 @@ class WithdrawOperation(Operation):
     @classmethod
     def undo(cls):
         """
-        Отмена внесения средств
+        Отмена снятия средств
 
         :return: Логическое значение обозначающее успех операции
         :rtype: bool

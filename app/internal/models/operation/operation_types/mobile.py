@@ -33,7 +33,7 @@ class MobileOperation(Operation):
 
     def __setattr__(self, name, value):
         """
-        Запрет на изменение поля type
+        Запрет на изменение поля type.
 
         :param name: имя поля, изменение которого отслеживаем
         :param value: значение отслеживаемого поля

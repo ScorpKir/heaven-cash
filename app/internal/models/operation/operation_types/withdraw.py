@@ -25,7 +25,6 @@ class WithdrawOperation(Operation):
                          amount=amount,
                          additional=additional,
                          type='withdraw')
-        self.type = 'withdraw'
 
     def __setattr__(self, name, value):
         """

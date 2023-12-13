@@ -26,7 +26,6 @@ class DepositOperation(Operation):
                          amount=amount,
                          additional=additional,
                          type='deposit')
-        self.type = 'deposit'
 
     def __setattr__(self, name, value):
         """

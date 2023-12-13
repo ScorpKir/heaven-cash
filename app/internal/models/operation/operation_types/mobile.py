@@ -27,7 +27,6 @@ class MobileOperation(Operation):
                              amount=amount,
                              additional=additional,
                              type='mobile')
-            self.type = 'mobile'
 
     def __setattr__(self, name, value):
         """

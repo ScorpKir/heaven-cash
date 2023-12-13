@@ -28,7 +28,6 @@ class CommunalPaymentOperation(Operation):
                              amount=amount,
                              additional=additional,
                              type='communal')
-            self.type = 'communal'
 
     def __setattr__(self, name, value):
         """

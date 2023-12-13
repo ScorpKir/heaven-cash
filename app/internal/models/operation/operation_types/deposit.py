@@ -5,7 +5,7 @@
 __author__ = "Alexey Kiselev"
 
 from app.internal.models.operation.operation import Operation, OperationTypes
-import app.internal.routes.user as ruser
+from app.internal.models.user.user import User
 
 
 class DepositOperation(Operation):
@@ -40,8 +40,7 @@ class DepositOperation(Operation):
         else:
             super().__setattr__(name, value)
 
-    @classmethod
-    def execute(cls):
+    def execute(self):
         """
         Выполнение внесения средств
 
@@ -49,22 +48,22 @@ class DepositOperation(Operation):
         :rtype: int
         """
 
-        # Обработка операции пользователя с указанным идентификатором
-        ruser.user_operation(cls.user, cls.amount, 'deposit')
-
+        user = User.read_by_id(self.user)
+        user.balance += self.amount
+        User.update(user)
         # Занесение операции в базу данных
-        _id = Operation.create(cls)
+        _id = Operation.create(self)
         return _id
 
-    @classmethod
-    def undo(cls):
+    def undo(self):
         """
         Отмена внесения средств
 
         :return: Логическое значение обозначающее успех операции
         :rtype: bool
         """
-        # Обработка операции пользователя с указанным идентификатором
-        ruser.user_operation(cls.user, -cls.amount, 'deposit')
+        user = User.read_by_id(self.user)
+        user.balance -= self.amount
+        User.update(user)
         # Удаление операции из базы данных
-        return Operation.delete(cls.id)
+        return Operation.delete(self.id)

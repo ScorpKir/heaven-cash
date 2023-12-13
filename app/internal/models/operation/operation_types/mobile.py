@@ -5,7 +5,6 @@
 __author__ = "Alexey Kiselev"
 
 from app.internal.models.operation.operation import Operation, OperationTypes
-import app.internal.routes.user as ruser
 
 
 class MobileOperation(Operation):
@@ -42,31 +41,3 @@ class MobileOperation(Operation):
             raise ValueError("Can`t change type of operation")
         else:
             super().__setattr__(name, value)
-
-    @classmethod
-    def execute(cls):
-        """
-        Выполнение оплаты мобильной связи
-
-        :return: id пользователя который выполнил операцию
-        :rtype: int
-        """
-
-        # Обработка операции пользователя с указанным идентификатором
-        ruser.user_operation(cls.user, -cls.amount, 'mobile')
-        # Занесение операции в базу данных
-        _id = Operation.create(cls)
-        return _id
-
-    @classmethod
-    def undo(cls):
-        """
-        Отмена оплаты мобильной связи
-
-        :return: Логическое значение обозначающее успех операции
-        :rtype: bool
-        """
-        # Обработка операции пользователя с указанным идентификатором
-        ruser.user_operation(cls.user, cls.amount, 'mobile')
-        # Удаление операции из базы данных
-        return Operation.delete(cls.id)

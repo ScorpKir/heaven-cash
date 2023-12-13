@@ -10,6 +10,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, confloat, conint
 
 from app.package.database.models.operation import OperationDatabaseModel
+from app.internal.models.user.user import User
 
 
 class OperationTypes(str, Enum):
@@ -93,3 +94,34 @@ class Operation(BaseModel):
         :rtype: bool
         """
         return OperationDatabaseModel.delete(id_)
+
+    def execute(self):
+        """
+        Выполнение операции
+
+        :return: id пользователя который выполнил операцию
+        :rtype: int
+        """
+
+        user = User.read_by_id(self.user)
+        if user.balance >= self.amount:
+            user.balance -= self.amount
+        else:
+            raise ValueError("Не хватает средств")
+        User.update(user)
+        # Занесение операции в базу данных
+        _id = Operation.create(self)
+        return _id
+
+    def undo(self):
+        """
+        Отмена операции
+
+        :return: Логическое значение обозначающее успех операции
+        :rtype: bool
+        """
+        user = User.read_by_id(self.user)
+        user.balance += self.amount
+        User.update(user)
+        # Удаление операции из базы данных
+        return Operation.delete(self.id)

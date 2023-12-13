@@ -5,7 +5,6 @@
 __author__ = "Alexey Kiselev"
 
 from app.internal.models.operation.operation import Operation, OperationTypes
-import app.internal.routes.user as ruser
 
 
 class WithdrawOperation(Operation):
@@ -39,31 +38,3 @@ class WithdrawOperation(Operation):
             raise ValueError("Can`t change type of operation")
         else:
             super().__setattr__(name, value)
-
-    @classmethod
-    def execute(cls):
-        """
-        Выполнение снятия средств
-
-        :return: id пользователя который выполнил операцию
-        :rtype: int
-        """
-
-        # Обработка операции пользователя с указанным идентификатором
-        ruser.user_operation(cls.user, -cls.amount, 'withdraw')
-        # Занесение операции в базу данных
-        _id = Operation.create(cls)
-        return _id
-
-    @classmethod
-    def undo(cls):
-        """
-        Отмена снятия средств
-
-        :return: Логическое значение обозначающее успех операции
-        :rtype: bool
-        """
-        # Обработка операции пользователя с указанным идентификатором
-        ruser.user_operation(cls.user, cls.amount, 'withdraw')
-        # Удаление операции из базы данных
-        return Operation.delete(cls.id)

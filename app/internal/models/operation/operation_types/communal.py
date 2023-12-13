@@ -6,7 +6,6 @@ __author__ = "Alexey Kiselev"
 
 from app.internal.models.operation.operation import Operation, OperationTypes
 import app.internal.routes.user as ruser
-from datetime import datetime
 
 
 class CommunalPaymentOperation(Operation):
@@ -17,7 +16,7 @@ class CommunalPaymentOperation(Operation):
     type - Тип операции
     date - Дата операции
     amount - Сумма операции
-    additional - Дополнительная информация (номер квитанции)
+    additional - Дополнительная информация (номер квитанции) - обязательное поле
     """
 
     def __init__(self, id, user, date, amount, additional):

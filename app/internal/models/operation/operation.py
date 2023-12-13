@@ -99,19 +99,18 @@ class Operation(BaseModel):
         """
         Выполнение операции
 
-        :return: id пользователя который выполнил операцию
-        :rtype: int
+        :return: Логическое значение обозначающее успех операции
+        :rtype: bool
         """
 
         user = User.read_by_id(self.user)
         if user.balance >= self.amount:
             user.balance -= self.amount
         else:
-            raise ValueError("Не хватает средств")
+            return False
         User.update(user)
         # Занесение операции в базу данных
-        _id = Operation.create(self)
-        return _id
+        return Operation.create(self)
 
     def undo(self):
         """

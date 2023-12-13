@@ -17,6 +17,7 @@ class MobileOperation(Operation):
     amount - Сумма операции
     additional - Дополнительная информация (номер телефона) - обязательное поле
     """
+
     def __init__(self, id, user, date, amount, additional):
         if additional is None:
             raise ValueError("additional can not be None!")

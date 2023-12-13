@@ -43,7 +43,7 @@ class CommunalPaymentOperation(Operation):
         """
 
         # Обработка операции пользователя с указанным идентификатором
-        ruser.user_operation(cls.user, cls.amount, 'communal')
+        ruser.user_operation(cls.user, -cls.amount, 'communal')
 
         # Занесение операции в базу данных
         _id = Operation.create(cls)

@@ -18,17 +18,16 @@ class MobileOperation(Operation):
     additional - Дополнительная информация (номер телефона) - обязательное поле
     """
     def __init__(self, id, user, date, amount, additional):
-        super().__init__(id=id,
-                         user=user,
-                         date=date,
-                         amount=amount,
-                         additional=additional,
-                         type='mobile')
-        self.type = 'mobile'
-        if additional is not None:
-            self.additional = additional
-        else:
+        if additional is None:
             raise ValueError("additional can not be None!")
+        else:
+            super().__init__(id=id,
+                             user=user,
+                             date=date,
+                             amount=amount,
+                             additional=additional,
+                             type='mobile')
+            self.type = 'mobile'
 
     def __setattr__(self, name, value):
         """

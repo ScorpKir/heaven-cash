@@ -33,6 +33,18 @@ class CommunalPaymentOperation(Operation):
         else:
             raise ValueError("additional can not be None!")
 
+    def __setattr__(self, name, value):
+        """
+        Запрет на изменение поля type
+
+        :param name: имя поля, изменение которого отслеживаем
+        :param value: значение отслеживаемого поля
+        """
+        if name == 'type' and value != 'communal':
+            raise ValueError("Can`t change type of operation")
+        else:
+            super().__setattr__(name, value)
+
     @classmethod
     def execute(cls):
         """

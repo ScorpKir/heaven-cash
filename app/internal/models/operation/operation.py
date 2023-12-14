@@ -10,6 +10,7 @@ from datetime import date
 from pydantic import BaseModel, ConfigDict, confloat, conint
 
 from app.package.database.models.operation import OperationDatabaseModel
+from app.internal.models.user.user import User
 
 
 class OperationTypes(str, Enum):
@@ -94,6 +95,31 @@ class Operation(BaseModel):
         """
         return OperationDatabaseModel.delete(id_)
 
-    @classmethod
-    def execute(cls):
-        ...
+    def execute(self):
+        """
+        Выполнение операции
+
+        :return: Логическое значение обозначающее успех операции
+        :rtype: bool
+        """
+
+        user = User.read_by_id(self.user)
+        user.balance -= self.amount
+        User.update(user)
+        self.id = Operation.create(self)
+        return self.id is not None
+
+    def undo(self):
+        """
+        Отмена операции
+
+        :return: Логическое значение обозначающее успех операции
+        :rtype: bool
+        """
+        if self.id:
+            user = User.read_by_id(self.user)
+            user.balance += self.amount
+            User.update(user)
+            return Operation.delete(self.id)
+        else:
+            raise ValueError("Нельзя отменить не выполненную операцию")

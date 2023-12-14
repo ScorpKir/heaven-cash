@@ -106,8 +106,8 @@ class Operation(BaseModel):
         user = User.read_by_id(self.user)
         user.balance -= self.amount
         User.update(user)
-        # Занесение операции в базу данных
-        return Operation.create(self)
+        self.id = Operation.create(self)
+        return self.id is not None
 
     def undo(self):
         """
@@ -116,8 +116,10 @@ class Operation(BaseModel):
         :return: Логическое значение обозначающее успех операции
         :rtype: bool
         """
-        user = User.read_by_id(self.user)
-        user.balance += self.amount
-        User.update(user)
-        # Удаление операции из базы данных
-        return Operation.delete(self.id)
+        if self.id:
+            user = User.read_by_id(self.user)
+            user.balance += self.amount
+            User.update(user)
+            return Operation.delete(self.id)
+        else:
+            raise ValueError("Нельзя отменить не выполненную операцию")

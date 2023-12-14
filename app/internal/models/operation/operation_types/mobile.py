@@ -4,7 +4,7 @@
 
 __author__ = "Alexey Kiselev"
 
-from app.internal.models.operation.operation import Operation, OperationTypes
+from app.internal.models.operation.operation import Operation
 
 
 class MobileOperation(Operation):
@@ -18,16 +18,16 @@ class MobileOperation(Operation):
     additional - Дополнительная информация (номер телефона) - обязательное поле
     """
 
-    def __init__(self, id, user, date, amount, additional):
+    def __init__(self, user, date, amount, additional):
         if additional is None:
             raise ValueError("additional can not be None!")
         else:
-            super().__init__(id=id,
-                             user=user,
+            super().__init__(user=user,
                              date=date,
                              amount=amount,
                              additional=additional,
                              type='mobile')
+            self.id = None
 
     def __setattr__(self, name, value):
         """

@@ -4,7 +4,7 @@
 
 __author__ = "Alexey Kiselev"
 
-from app.internal.models.operation.operation import Operation, OperationTypes
+from app.internal.models.operation.operation import Operation
 
 
 class WithdrawOperation(Operation):
@@ -18,13 +18,13 @@ class WithdrawOperation(Operation):
     additional - Дополнительная информация
     """
 
-    def __init__(self, id, user, date, amount, additional=None):
-        super().__init__(id=id,
-                         user=user,
+    def __init__(self, user, date, amount, additional=None):
+        super().__init__(user=user,
                          date=date,
                          amount=amount,
                          additional=additional,
                          type='withdraw')
+        self.id = None
 
     def __setattr__(self, name, value):
         """

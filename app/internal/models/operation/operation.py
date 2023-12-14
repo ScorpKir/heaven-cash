@@ -94,7 +94,7 @@ class Operation(BaseModel):
         :rtype: bool
         """
         return OperationDatabaseModel.delete(id_)
-      
+
     def execute(self):
         """
         Выполнение операции

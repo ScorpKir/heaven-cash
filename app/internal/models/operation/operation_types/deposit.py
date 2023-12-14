@@ -4,7 +4,7 @@
 
 __author__ = "Alexey Kiselev"
 
-from app.internal.models.operation.operation import Operation, OperationTypes
+from app.internal.models.operation.operation import Operation
 from app.internal.models.user.user import User
 
 
@@ -19,13 +19,13 @@ class DepositOperation(Operation):
     additional - Дополнительная информация
     """
 
-    def __init__(self, id, user, date, amount, additional=None):
-        super().__init__(id=id,
-                         user=user,
+    def __init__(self, user, date, amount, additional=None):
+        super().__init__(user=user,
                          date=date,
                          amount=amount,
                          additional=additional,
                          type='deposit')
+        self.id = None
 
     def __setattr__(self, name, value):
         """
@@ -39,29 +39,30 @@ class DepositOperation(Operation):
         else:
             super().__setattr__(name, value)
 
-    def execute(self):
+    def execute(self) -> bool:
         """
         Выполнение внесения средств
 
         :return: Логическое значение обозначающее успех операции
         :rtype: bool
         """
-
         user = User.read_by_id(self.user)
         user.balance += self.amount
         User.update(user)
-        # Занесение операции в базу данных
-        return Operation.create(self)
+        self.id = Operation.create(self)
+        return self.id is not None
 
-    def undo(self):
+    def undo(self) -> bool:
         """
         Отмена внесения средств
 
         :return: Логическое значение обозначающее успех операции
         :rtype: bool
         """
-        user = User.read_by_id(self.user)
-        user.balance -= self.amount
-        User.update(user)
-        # Удаление операции из базы данных
-        return Operation.delete(self.id)
+        if self.id:
+            user = User.read_by_id(self.user)
+            user.balance -= self.amount
+            User.update(user)
+            return Operation.delete(self.id)
+        else:
+            raise ValueError("Нельзя отменить не выполненную операцию")

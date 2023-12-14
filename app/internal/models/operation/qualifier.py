@@ -4,36 +4,39 @@
 
 __author__ = "Dmitry Voronini"
 
-from operation import Operation, OperationTypes
+from datetime import date
+
+from operation import Operation
+from operation_types.deposit import DepositOperation
+from operation_types.withdraw import WithdrawOperation
+from operation_types.communal import CommunalPaymentOperation
+from operation_types.mobile import MobileOperation
 
 
 class OperationTypeQualifier:
+    """
+    Определитель типа операции
+    """
+    operation: Operation = None
 
     @classmethod
-    def get_operation(cls, user, operation_type, date, amount, additional):
-        if operation_type == OperationTypes.COMMUNAL:
-            if additional is None:
-                raise ValueError("NullPointerException")
-            return Operation(user=user,
-                             type=operation_type,
-                             date=date,
-                             amount=amount,
-                             additional=additional)
-        elif operation_type == OperationTypes.MOBILE:
-            if additional is None:
-                raise ValueError("NullPointerException")
-            return Operation(user=user,
-                             type=operation_type,
-                             date=date,
-                             amount=amount,
-                             additional=additional)
-        else:
-            return Operation(user=user,
-                             type=operation_type,
-                             date=date,
-                             amount=amount)
+    def get_operation(cls, user: int, operation_type: str, date_: date,
+                      amount: float, additional: str) -> None:
+        """Определение типа операции исходя из входных данных"""
+        operation_type_mapping = {
+            "deposit": DepositOperation,
+            "withdraw": WithdrawOperation,
+            "communal": CommunalPaymentOperation,
+            "mobile": MobileOperation
+        }
+        operation_class = operation_type_mapping[operation_type]
+        cls.operation = operation_class(user=user,
+                                        type=operation_type,
+                                        date=date_,
+                                        amount=amount,
+                                        additional=additional)
 
     @classmethod
-    def execute(cls, operations):
-        operation = Operation.create(operations)
-        return operation
+    def execute(cls) -> None:
+        """Выполнение операции"""
+        return cls.operation.execute()

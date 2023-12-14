@@ -84,7 +84,7 @@ async def get_user(id: int | None = None) -> JSONResponse:
 @router.post("/operation")
 async def user_operation(id: int,
                          amount: float,
-                         additional: str | None,
+                         additional: str | None = None,
                          type: str | None = "general") -> JSONResponse:
     """
     # Обработка операции пользователя с указанным идентификатором
@@ -94,7 +94,7 @@ async def user_operation(id: int,
     ### `amount` Изменение баланса пользователя.
      Например, `100`, `5000`, `-250`, `-1100`
     ### `additional` Дополнительная информация о услуге.
-     Для оплаты мобильной связи здесь должен находиться номер телефона
+     Для оплаты мобильной связи здесь должен находиться номер телефонa.
      Для оплаты коммунальных услуг здесь должен находиться номер квитанции
     ### `type` Название типа операции.
      Например, `withdraw` (снятие), `deposit` (внесение), `mobile`

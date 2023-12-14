@@ -6,7 +6,7 @@ __author__ = "Kirill Petryashev"
 
 from typing import Optional
 from enum import Enum
-from datetime import datetime
+from datetime import date
 from pydantic import BaseModel, ConfigDict, confloat, conint
 
 from app.package.database.models.operation import OperationDatabaseModel
@@ -39,7 +39,7 @@ class Operation(BaseModel):
     id: Optional[conint(ge=1)] = None
     user: conint(ge=1)
     type: OperationTypes
-    date: datetime
+    date: date
     amount: confloat(ge=0.00)
     additional: Optional[str] = None
 
@@ -94,7 +94,7 @@ class Operation(BaseModel):
         :rtype: bool
         """
         return OperationDatabaseModel.delete(id_)
-
+      
     def execute(self):
         """
         Выполнение операции

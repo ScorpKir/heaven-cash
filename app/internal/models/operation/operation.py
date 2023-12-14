@@ -104,10 +104,7 @@ class Operation(BaseModel):
         """
 
         user = User.read_by_id(self.user)
-        if user.balance >= self.amount:
-            user.balance -= self.amount
-        else:
-            return False
+        user.balance -= self.amount
         User.update(user)
         # Занесение операции в базу данных
         return Operation.create(self)

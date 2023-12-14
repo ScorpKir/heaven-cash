@@ -61,10 +61,7 @@ class DepositOperation(Operation):
         :rtype: bool
         """
         user = User.read_by_id(self.user)
-        if user.balance >= self.amount:
-            user.balance -= self.amount
-        else:
-            return False
+        user.balance -= self.amount
         User.update(user)
         # Удаление операции из базы данных
         return Operation.delete(self.id)

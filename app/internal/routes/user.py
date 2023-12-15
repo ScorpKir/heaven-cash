@@ -4,12 +4,15 @@
 
 __author__ = "Kirill Petryashev"
 
+from datetime import date
+
 from pydantic import ValidationError
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
-from src.models.user import \
-    (User, read_user_id_by_code, read_user_by_id, update_user)
+
+from app.internal.models.user.user import User
+from app.internal.models.operation.qualifier import OperationTypeQualifier
 
 # Определение роутера для эндпоинтов пользователя
 router = APIRouter(prefix='/user')
@@ -35,11 +38,10 @@ async def get_user_id_by_code(code: str) -> JSONResponse:
     `HTTP 404` Пользователь с указанным ПИН-кодом **не существует**.
     """
     try:
-        id_ = read_user_id_by_code(code)
+        id_ = User.read_id_by_code(code)
         if id_ is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Неизвестный ПИН-код")
-        # id_ = "" if id_ is None else id_
         response = {"id": id_}
         return JSONResponse(content=response, status_code=status.HTTP_200_OK)
     except ValueError:
@@ -71,7 +73,7 @@ async def get_user(id: int | None = None) -> JSONResponse:
     `HTTP 404` Пользователь с указанным идентификатором **не существует**.
     """
     try:
-        response = read_user_by_id(id)
+        response = User.read_by_id(id)
         if response is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Неизвестный ID")
@@ -85,6 +87,7 @@ async def get_user(id: int | None = None) -> JSONResponse:
 @router.post("/operation")
 async def user_operation(id: int,
                          amount: float,
+                         additional: str | None = None,
                          type: str | None = "general") -> JSONResponse:
     """
     # Обработка операции пользователя с указанным идентификатором
@@ -93,6 +96,9 @@ async def user_operation(id: int,
      Например, `1`, `2`, `5`, `10`
     ### `amount` Изменение баланса пользователя.
      Например, `100`, `5000`, `-250`, `-1100`
+    ### `additional` Дополнительная информация о услуге.
+     Для оплаты мобильной связи здесь должен находиться номер телефонa.
+     Для оплаты коммунальных услуг здесь должен находиться номер квитанции
     ### `type` Название типа операции.
      Например, `withdraw` (снятие), `deposit` (внесение), `mobile`
      (мобильная связь), `communal` (коммунальные платежи).
@@ -113,31 +119,20 @@ async def user_operation(id: int,
     ```
     `HTTP 500` Операция не прошла, а баланс не изменен, так как у пользователя
     **недостаточно средств**.
-    ```
     `HTTP 404` Пользователь с указанным идентификатором **не существует**.
     """
-
-    # TODO:
-    #   1. Добавление операции в базу данных.
-    #   2. Обработка исключительных случаев типа "указан тип withdraw,
-    #       но значение amount положительно" и наоборот.
-    #   3. Возврат кодов состояния или информации в JSON для информирования
-    #       фронтенда о статусе запроса.
-
     try:
-        user = read_user_by_id(id)
-        if user is None:
+        operation = OperationTypeQualifier()
+        operation.get_operation(id, type, date.today(), amount, additional)
+        new_balance = operation.execute()
+        if new_balance is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Неизвестный ID")
-        try:
-            user.balance += amount
-            update_user(user)
-            response = {"balance": user.balance}
-        except ValidationError:
-            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-            raise HTTPException(status_code=status_code,
-                                detail="Не хватает денег")
+        response = {"balance": new_balance}
         return JSONResponse(content=response, status_code=status.HTTP_200_OK)
-    except ValueError:
+    except ValidationError as e:
+        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        raise HTTPException(status_code=status_code, detail=str(e))
+    except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="Неверный формат входных данных")
+                            detail=str(e))

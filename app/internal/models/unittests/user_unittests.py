@@ -5,15 +5,14 @@
 __author__ = "Kirill Petryashev"
 
 import unittest
-from random import randint
-
 import pytest
+from random import randint
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
-from ..utilities.database import ENGINE
-from src.models.user import (User, create_user, read_user_by_id, update_user,
-                             delete_user, UserDatabaseModel, read_user_by_code,
-                             read_user_id_by_code)
+
+from app.package.database.database import ENGINE
+from app.package.database.models.user import UserDatabaseModel
+from app.internal.models.user.user import User
 
 
 class TestUser(unittest.TestCase):
@@ -84,7 +83,7 @@ class TestUser(unittest.TestCase):
                  balance=43_456)
         ]
         for user in users:
-            create_user(user)
+            User.create(user)
 
     def test_create_user(self):
         """
@@ -94,16 +93,16 @@ class TestUser(unittest.TestCase):
                     card_number="5754",
                     payment_system="МастерМир",
                     balance=12345)
-        id_ = create_user(user)
+        id_ = User.create(user)
         self.assertNotEqual(id_, None)
-        delete_user(id_)
+        user.delete(id_)
 
     def test_read_user_by_id(self):
         """
         Тестирование чтения пользователя
         """
         id_ = 1
-        user = read_user_by_id(id_)
+        user = User.read_by_id(id_)
         self.assertEqual(id_, user.id)
 
     def test_read_user_by_non_existing_id(self):
@@ -111,12 +110,12 @@ class TestUser(unittest.TestCase):
         Тестирование чтения пользователя по несуществующему идентификатору
         """
         id_ = 11
-        user = read_user_by_id(id_)
+        user = User.read_by_id(id_)
         self.assertEqual(user, None)
 
     def test_read_user_by_correct_code(self):
         code = "4579"
-        user = read_user_by_code(code)
+        user = User.read_by_code(code)
         self.assertEqual(code, user.code)
 
     def test_read_user_by_non_existing_code(self):
@@ -124,7 +123,7 @@ class TestUser(unittest.TestCase):
         Тестирование чтения пользователя по несуществующему пинкоду
         """
         code = "5754"
-        user = read_user_by_code(code)
+        user = User.read_by_code(code)
         self.assertEqual(user, None)
 
     def test_read_user_id_by_correct_code(self):
@@ -132,7 +131,7 @@ class TestUser(unittest.TestCase):
         Тестирование чтения идентификатора пользователя по корректному пинкоду
         """
         code = "4579"
-        id_ = read_user_id_by_code(code)
+        id_ = User.read_id_by_code(code)
         self.assertNotEqual(id_, None)
 
     def test_read_user_id_by_broken_code(self):
@@ -140,7 +139,7 @@ class TestUser(unittest.TestCase):
         Тестирование чтения идентификатора пользователя по некорректному пинкоду
         """
         code = "a"
-        self.assertRaises(ValueError, read_user_id_by_code, code)
+        self.assertRaises(ValueError, User.read_id_by_code, code)
 
     def test_read_user_id_by_non_existing_code(self):
         """
@@ -148,34 +147,53 @@ class TestUser(unittest.TestCase):
         по несуществующему пинкоду
         """
         code = "5754"
-        id_ = read_user_id_by_code(code)
+        id_ = User.read_id_by_code(code)
         self.assertEqual(id_, None)
 
     def test_read_user_by_broken_code(self):
         code = "asdf"
-        self.assertRaises(ValueError, read_user_by_code, code)
+        self.assertRaises(ValueError, User.read_by_code, code)
 
     def test_update_user(self):
         """
         Тестирование обновления пользователя
         """
         id_ = 1
-        user = read_user_by_id(id_)
+        user = User.read_by_id(id_)
         user.balance = randint(0, 1_000_000)
-        result = update_user(user)
-        self.assertNotEqual(result, None)
-        self.assertEqual(result.balance, user.balance)
+        result = User.update(user)
+        self.assertNotEqual(result, False)
+        new_user = User.read_by_id(id_)
+        self.assertEqual(new_user.balance, user.balance)
+
+    def test_update_user_without_id(self):
+        """
+        Тестирование обновления пользователя без идентификатора
+        """
+        user = User(code="4579",
+                    card_number="1677",
+                    payment_system="МастерМир",
+                    balance=10_000)
+        self.assertRaises(ValueError, User.update, user)
 
     def test_delete_user(self):
         """
         Тестирование удаления пользователя
         """
         id_ = 1
-        result = delete_user(id_)
+        result = User.delete(id_)
         self.assertEqual(result, True)
         user = User(id=1,
                     code="4579",
                     card_number="1677",
                     payment_system="МастерМир",
                     balance=10_000)
-        create_user(user)
+        User.create(user)
+
+    def test_delete_user_by_non_existing_id(self):
+        """
+        Тестирование удаления пользователя по несуществующему идентификатору
+        """
+        id_ = 1_000_000_000
+        result = User.delete(id_)
+        self.assertEqual(result, False)

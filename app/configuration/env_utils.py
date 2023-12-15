@@ -2,7 +2,7 @@
 Логика получения переменных среды
 """
 
-__author__ = "Kirill Petryashev"
+__author__ = "Kirill Petryashev, Dmitry Leminchuk"
 
 import os
 from dotenv import load_dotenv
@@ -18,7 +18,7 @@ def get_connection_string() -> str:
     """
     load_dotenv()
     connection_string = os.getenv("DB_CONNECTION")
-    if connection_string is None:
+    if connection_string is None or connection_string == "":
         raise KeyError("Переменная DB_CONNECTION не задана!")
     return connection_string
 
@@ -27,10 +27,10 @@ def get_allowed_origins() -> list[str]:
     """
     Получение разрешенных источников для
     заголовков запроса CORS.
+
     :returns: Список разрешенных адресов
     :rtype: list[str]
     """
-
     load_dotenv()
     allowed = os.getenv("CORS_ALLOWED_ORIGINS")
     if allowed is None or allowed == "":

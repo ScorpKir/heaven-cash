@@ -129,12 +129,10 @@ async def user_operation(id: int,
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Неизвестный ID")
         response = {"balance": new_balance}
-        return JSONResponse(content=response,
-                            status_code=status.HTTP_200_OK)
-    except ValidationError:
+        return JSONResponse(content=response, status_code=status.HTTP_200_OK)
+    except ValidationError as e:
         status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        raise HTTPException(status_code=status_code,
-                            detail="Не хватает денег")
-    except ValueError:
+        raise HTTPException(status_code=status_code, detail=str(e))
+    except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="Неверный формат входных данных")
+                            detail=str(e))

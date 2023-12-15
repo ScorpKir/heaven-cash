@@ -4,12 +4,15 @@
 
 __author__ = "Kirill Petryashev"
 
+from datetime import date
+
 from pydantic import ValidationError
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
 
 from app.internal.models.user.user import User
+from app.internal.models.operation.qualifier import OperationTypeQualifier
 
 # Определение роутера для эндпоинтов пользователя
 router = APIRouter(prefix='/user')
@@ -119,22 +122,17 @@ async def user_operation(id: int,
     `HTTP 404` Пользователь с указанным идентификатором **не существует**.
     """
     try:
-        user = User.read_by_id(id)
-        if user is None:
+        operation = OperationTypeQualifier()
+        operation.get_operation(id, type, date.today(), amount, additional)
+        new_balance = operation.execute()
+        if new_balance is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail="Неизвестный ID")
-        try:
-            if type != "deposit":
-                user.balance -= amount
-            else:
-                user.balance += amount
-            User.update(user)
-            response = {"balance": user.balance}
-        except ValidationError:
-            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-            raise HTTPException(status_code=status_code,
-                                detail="Не хватает денег")
+        response = {"balance": new_balance}
         return JSONResponse(content=response, status_code=status.HTTP_200_OK)
-    except ValueError:
+    except ValidationError as e:
+        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        raise HTTPException(status_code=status_code, detail=str(e))
+    except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="Неверный формат входных данных")
+                            detail=str(e))

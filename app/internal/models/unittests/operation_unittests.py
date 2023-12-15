@@ -17,8 +17,7 @@ class TestUser(unittest.TestCase):
         """
         Тестирование создания операции
         """
-        operation = Operation(id=5,
-                              user=1,
+        operation = Operation(user=1,
                               type="communal",
                               date=date.fromisoformat("2023-11-21"),
                               amount=3456,
@@ -31,14 +30,12 @@ class TestUser(unittest.TestCase):
         """
         Тестирование чтения операции
         """
-        operation = Operation(id=5,
-                              user=1,
+        operation = Operation(user=1,
                               type="communal",
                               date=date.fromisoformat("2023-11-21"),
                               amount=3456,
                               additional="3453456098345067034569")
-        Operation.create(operation)
-        id_ = operation.id
+        id_ = Operation.create(operation)
         new_operation = Operation.read_by_id(id_)
         self.assertNotEqual(new_operation, None)
         Operation.delete(id_)
@@ -55,14 +52,13 @@ class TestUser(unittest.TestCase):
         """
         Тестирование удаления операции
         """
-        operation = Operation(id=5,
-                              user=1,
+        operation = Operation(user=1,
                               type="communal",
                               date=date.fromisoformat("2023-11-21"),
                               amount=3456,
                               additional="3453456098345067034569")
-        Operation.create(operation)
-        result = Operation.delete(operation.id)
+        id_ = Operation.create(operation)
+        result = Operation.delete(id_)
         self.assertEqual(result, True)
 
     def test_delete_operation_by_non_existing_id(self):

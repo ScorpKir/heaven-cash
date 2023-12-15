@@ -39,18 +39,19 @@ class DepositOperation(Operation):
         else:
             super().__setattr__(name, value)
 
-    def execute(self) -> bool:
+    def execute(self) -> float:
         """
-        Выполнение внесения средств
+        Выполнение операции внесения средств
 
-        :return: Логическое значение обозначающее успех операции
-        :rtype: bool
+        :return: Новое значение баланса пользователя если операция произошла
+        :rtype: float | None
         """
         user = User.read_by_id(self.user)
-        user.balance += self.amount
-        User.update(user)
-        self.id = Operation.create(self)
-        return self.id is not None
+        if user:
+            user.balance += self.amount
+            User.update(user)
+            self.id = Operation.create(self)
+            return user.balance
 
     def undo(self) -> bool:
         """

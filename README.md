@@ -27,11 +27,12 @@ Backend для учебного проекта "Банкомат".
   <img src="https://static.insales-cdn.com/files/1/5275/10237083/original/mceclip3-1569443829846.jpg" width=400 />
 </p>
 
-# Наша команда (Backend)
+**Состав команды:**
+
 - Кирилл Петряшев (Senior Backend Dev)
 - Дмитрий Леминчук (DevOps Engineer)
 - Дмитрий Воронин (Middle Backend Dev)
 - Алексей Киселёв (Junior Backend Dev)
 
-# Фронтенд
+### Фронтенд
 Репозиторий с фронтендом недоступен.
